@@ -1,187 +1,254 @@
 #include QMK_KEYBOARD_H
+#include <string.h>
 
-enum custom_layer {
-  QWERTY_MACOS,
-  QWERTY_WINDOWS
+
+
+// keymap for Kinesis Advantage2 (KB600) QWERTZ layout
+// designed to run on MacOS/iPadOS/iOS and Windows
+// please set system keyboard language to german!
+
+
+
+enum keyboard_layer {
+  QWERTZ_MACOS,   // default mac layer
+  QWERTZ_WINDOWS, // default windows layer
+  QWERTZ_KEYPAD,  // keypad layer
+  QWERTZ_SYMBOLS  // symbols layer
 };
+
+
 
 enum custom_key {
-  KC_PROGM
+  KCC_SUPER,  // chain keys to trigger macro (custom implementation analog to leader key concept)
+  KCC_KEYPAD, // tap for shift and double-tap for keypad layer
+  KCC_SYMBOLS // activate symbols layer
 };
 
-enum custom_modifier {
-  MOD_PROGM = MOD_HYPR + 1 // TODO is it possible to create new modifier keys myself?
-};
 
-/*
-*
-* The ASCII-graphic shows a Kinesis Advantage2 with its default QWERTY layout
-* However, this particular layout is MY favorite key- and macro mappings for both Windows and MacOS
-* Please note that this layout is meant to be used on computers with their system language set to german (it won't work with en_us)!!!
-* Also note that I'm using a Kinesis Advantage2 KB600 DE QWERTZ
-*
-* ,-------------------------------------------------------------------------------------------------------------------.
-* | Esc    |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |  F8  |  F9  |  F10 |  F12 | PSCR | SLCK | PAUS |  FN0 |  BOOT  |
-* |--------+------+------+------+------+------+---------------------------+------+------+------+------+------+--------|
-* | =+     |  1!  |  2@  |  3#  |  4$  |  5%  |                           |  6^  |  7&  |  8*  |  9(  |  0)  | -_     |
-* |--------+------+------+------+------+------|                           +------+------+------+------+------+--------|
-* | Tab    |   Q  |   W  |   E  |   R  |   T  |                           |   Y  |   U  |   I  |   O  |   P  | \|     |
-* |--------+------+------+------+------+------|                           |------+------+------+------+------+--------|
-* | Caps   |   A  |   S  |   D  |   F  |   G  |                           |   H  |   J  |   K  |   L  |  ;:  | '"     |
-* |--------+------+------+------+------+------|                           |------+------+------+------+------+--------|
-* | Shift  |   Z  |   X  |   C  |   V  |   B  |                           |   N  |   M  |  ,.  |  .>  |  /?  | Shift  |
-* `--------+------+------+------+------+-------                           `------+------+------+------+------+--------'
-*          | `~   | INS  | Left | Right|                                         | Up   | Down |  [{  |  ]}  |
-*          `---------------------------'                                         `---------------------------'
-*                                        ,-------------.         ,-------------.
-*                                        | Ctrl | Alt  |         | Gui  | Ctrl |
-*                                 ,------|------|------|         |------+------+------.
-*                                 |      |      | Home |         | PgUp |      |      |
-*                                 | BkSp | Del  |------|         |------|Return| Space|
-*                                 |      |      | End  |         | PgDn |      |      |
-*                                 `--------------------'         `--------------------'
-*/
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [QWERTY_MACOS] = LAYOUT(
+
+  /******************************************************/
+  /******************* base layer mac *******************/
+  /******************************************************/
+
+  [QWERTZ_MACOS] = LAYOUT(
+    // left keywell
+    XXXXXXX,      KC_F1,    KC_F2,      KC_F3,    KC_F4,      KC_F5,  KC_F6,  KC_F7,  KC_F8,
+    XXXXXXX,      KC_1,     KC_2,       KC_3,     KC_4,       KC_5,
+    XXXXXXX,      KC_Q,     KC_W,       KC_E,     KC_R,       KC_F,
+    XXXXXXX,      KC_A,     KC_S,       KC_D,     KC_T,       KC_G,
+    KC_EXCLAIM,   KC_Z,     KC_X,       KC_C,     KC_V,       KC_B,
+                  XXXXXXX,  XXXXXXX,    XXXXXXX,  KC_LGUI,
+    // left thumb
+                  LALT_T(KC_DELETE),    XXXXXXX,
+                                        KC_LCTRL,
+    KC_SPACE,     KC_LSHIFT,            KC_LGUI,
+    // right keywell
+    KC_F9,    KC_F10,   KC_F11,     KC_F12,     KC_AUDIO_MUTE,  KC_AUDIO_VOL_DOWN,  KC_AUDIO_VOL_UP,  XXXXXXX,  RESET,
+    KC_6,     KC_7,     KC_8,       KC_9,       KC_0,           XXXXXXX,
+    KC_Y,     KC_U,     KC_I,       KC_O,       XXXXXXX,        XXXXXXX,
+    KC_H,     KC_N,     KC_K,       KC_L,       KC_P,           XXXXXXX,
+    KC_J,     KC_M,     KC_COMMA,   KC_DOT,     KC_SLASH,       LSFT(KC_MINUS),
+              KC_LEFT,  KC_DOWN,    KC_UP,      KC_RGHT,
+    // right thumb
+    XXXXXXX,            LALT_T(KC_BSPACE),
+    XXXXXXX,
+    LGUI_T(KC_ESCAPE),  RSFT_T(KC_ENTER),       KCC_SUPER
+  ),
+
+  /******************************************************/
+  /***************** base layer windows *****************/
+  /******************************************************/
+  
+  [QWERTZ_WINDOWS] = LAYOUT(
     // left keywell
     XXXXXXX,      KC_F1,    KC_F2,    KC_F3,    KC_F4,      KC_F5,  KC_F6,  KC_F7,  KC_F8,
-
     XXXXXXX,      KC_1,     KC_2,     KC_3,     KC_4,       KC_5,
     XXXXXXX,      KC_Q,     KC_W,     KC_E,     KC_R,       KC_F,
-    KC_EXCLAIM,   KC_A,     KC_S,     KC_D,     KC_T,       KC_G,
-    XXXXXXX,      KC_Z,     KC_X,     KC_C,     KC_V,       KC_B,
-                  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_LGUI,
-    
-    LALT_T(KC_DELETE),  XXXXXXX,
-                        KC_LCTRL,
-    KC_SPACE,           KC_LSHIFT,  KC_LGUI,
-
+    XXXXXXX,      KC_A,     KC_S,     KC_D,     KC_T,       KC_G,
+    KC_EXCLAIM,   KC_Z,     KC_X,     KC_C,     KC_V,       KC_B,
+                  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+    // left thumb
+                  RALT_T(KC_DELETE),  XXXXXXX,
+                                      KC_LGUI,
+    KC_SPACE,     KC_LSHIFT,          KC_LCTRL,
     // right keywell
-    KC_F9,    KC_F10,   KC_F11,     KC_F12,   KC__MUTE,   KC__VOLDOWN,  KC__VOLUP,  XXXXXXX,  KC_PROGM,
-
-    KC_6,     KC_7,     KC_8,       KC_9,     KC_0,       XXXXXXX,
-    KC_Y,     KC_U,     KC_I,       KC_O,     XXXXXXX,    XXXXXXX,
-    KC_H,     KC_N,     KC_K,       KC_L,     KC_P,       KC_QUESTION,
-    KC_J,     KC_M,     KC_COMMA,   KC_DOT,   KC_SLASH,   XXXXXXX,
+    KC_F9,    KC_F10,   KC_F11,     KC_F12,   KC_AUDIO_MUTE,  KC_AUDIO_VOL_DOWN,  KC_AUDIO_VOL_UP,  XXXXXXX,  RESET,
+    KC_6,     KC_7,     KC_8,       KC_9,     KC_0,           XXXXXXX,
+    KC_Y,     KC_U,     KC_I,       KC_O,     XXXXXXX,        XXXXXXX,
+    KC_H,     KC_N,     KC_K,       KC_L,     KC_P,           XXXXXXX,
+    KC_J,     KC_M,     KC_COMMA,   KC_DOT,   KC_SLASH,       LSFT(KC_MINUS),
               KC_LEFT,  KC_DOWN,    KC_UP,    KC_RGHT,
-
-    KC_LALT,          LALT_T(KC_BSPACE),
+    // right thumb
+    XXXXXXX,            RALT_T(KC_BSPACE),
     XXXXXXX,
-    KC_LEAD,  RSFT_T(KC_ENTER),   XXXXXXX
+    LCTL_T(KC_ESCAPE),  RSFT_T(KC_ENTER),     XXXXXXX
+  ),
+
+  /******************************************************/
+  /******************* keypad layer *********************/
+  /******************************************************/
+
+  [QWERTZ_KEYPAD] = LAYOUT(
+    // left keywell
+    XXXXXXX,      KC_BRIGHTNESS_DOWN,       KC_BRIGHTNESS_UP,     XXXXXXX,    XXXXXXX,  DF(QWERTZ_MACOS),  XXXXXXX,  DF(QWERTZ_WINDOWS),  XXXXXXX,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,              XXXXXXX,    XXXXXXX,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,              XXXXXXX,    XXXXXXX,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,              XXXXXXX,    XXXXXXX,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,              XXXXXXX,    XXXXXXX,
+                  XXXXXXX,     XXXXXXX,     XXXXXXX,              _______,
+    // left thumb
+                  _______,  _______,
+                            _______,
+    KC_TAB,       _______,  _______,
+    // right keywell
+    XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    KC_MEDIA_PLAY_PAUSE,  KC_MEDIA_PREV_TRACK,  KC_MEDIA_NEXT_TRACK,  XXXXXXX,  _______,
+    XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
+    XXXXXXX,      KC_KP_7,      KC_KP_8,    KC_KP_9,    XXXXXXX,              XXXXXXX,
+    XXXXXXX,      KC_KP_4,      KC_KP_5,    KC_KP_6,    XXXXXXX,              XXXXXXX,
+    KC_KP_EQUAL,  KC_KP_1,      KC_KP_2,    KC_KP_3,    XXXXXXX,              XXXXXXX,
+                  _______,      _______,    _______,    _______,
+    // right thumb
+    _______,  _______,
+    _______,
+    _______,  KC_KP_ENTER,  KC_KP_0
+  ),
+
+  /******************************************************/
+  /****************** symbols layer *********************/
+  /******************************************************/
+
+  [QWERTZ_SYMBOLS] = LAYOUT(
+    // left keywell
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    DF(QWERTZ_MACOS),  XXXXXXX,  DF(QWERTZ_WINDOWS),  XXXXXXX,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    XXXXXXX,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    XXXXXXX,
+    XXXXXXX,      KC_KP_1,     KC_KP_2,     KC_KP_3,     KC_KP_4,    KC_KP_5,
+    XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    XXXXXXX,
+                  XXXXXXX,     XXXXXXX,     XXXXXXX,     _______,
+    // left thumb
+                  _______,  _______,
+                            _______,
+    KC_TAB,       _______,  _______,
+    // right keywell
+    XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    KC_MEDIA_PLAY_PAUSE,  KC_MEDIA_PREV_TRACK,  KC_MEDIA_NEXT_TRACK,  XXXXXXX,  _______,
+    XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
+    XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
+    KC_KP_6,      KC_KP_7,      KC_KP_8,    KC_KP_9,    KC_KP_0,              XXXXXXX,
+    XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
+                  _______,      _______,    _______,    _______,
+    // right thumb
+    XXXXXXX,  XXXXXXX,
+    XXXXXXX,
+    XXXXXXX,  XXXXXXX,  _______
   )
 };
 
 
 
-void matrix_init_user(void) {
+uint16_t a_umlaut[2]       = {KC_A, KC_E};
+uint16_t u_umlaut[2]       = {KC_U, KC_E};
+uint16_t o_umlaut[2]       = {KC_O, KC_E};
+uint16_t s_umlaut[2]       = {KC_S, KC_S};
+uint16_t and_symbol[1]     = {KC_U};
+uint16_t usd_symbol[1]     = {KC_S};
+uint16_t eur_symbol[1]     = {KC_E};
+uint16_t tilde_symbol[1]   = {KC_N};
+uint16_t hash_symbol[1]    = {KC_H};
+uint16_t at_symbol[1]      = {KC_L};
+uint16_t celcius_symbol[1] = {KC_C};
+uint16_t percent_symbol[1] = {KC_P};
+
+void a_umlaut_macro(void) {tap_code(KC_QUOTE);};
+void u_umlaut_macro(void) {tap_code(KC_LBRACKET);};
+void o_umlaut_macro(void) {tap_code(KC_SCOLON);};
+void s_umlaut_macro(void) {tap_code(KC_MINUS);};
+void and_symbol_macro(void) {};
+void usd_symbol_macro(void) {};
+void eur_symbol_macro(void) {SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_E) SS_UP(X_LALT));};
+void tilde_symbol_macro(void) {SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_N) SS_UP(X_LALT) SS_TAP(X_SPACE));};
+void hash_symbol_macro(void) {tap_code(KC_NONUS_HASH);};
+void at_symbol_macro(void) {SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_L) SS_UP(X_LALT));};
+void celcius_symbol_macro(void) {};
+void percent_symbol_macro(void) {};
+
+
+
+uint16_t super_queue[5]; // of finite length
+uint16_t super_queue_index;
+uint16_t super_timestamp;
+uint16_t super_timeout = 300; // adjust to your liking!
+bool super_update_timeout = true; // restart timer for every new sequence segment while listening
+bool super_running = false;
+
+void super_reset(void) {
+  // TODO flush evenrything from buffer to the screen
+  memset(super_queue, 0, sizeof(super_queue));
+  super_queue_index = 0;
+  super_timestamp = timer_read();
+  super_running = false;
 };
 
+bool super_overdue(void) {
+  return timer_elapsed(super_timestamp) >= super_timeout || super_queue_index >= sizeof(super_queue) / sizeof(uint16_t);
+};
 
-
-bool chord_leader_succeeded;
-LEADER_EXTERNS();
-
-void matrix_scan_user(void) {
-  LEADER_DICTIONARY() {
-    chord_leader_succeeded = leading = false;
-
-    SEQ_TWO_KEYS(KC_A, KC_E) {
-      register_code(KC_BSLASH);
-      unregister_code(KC_BSLASH);
-      chord_leader_succeeded = true;
-      return leader_end();
+bool super_record(uint16_t keycode, keyrecord_t *record) {
+  if(record->event.pressed) { // on keydown
+    if(keycode == KCC_SUPER) {
+      super_reset();
+      super_running = true;
+      return true;
+    } else if(super_running && !super_overdue()) {
+      if(super_update_timeout) super_timestamp = timer_read();
+      super_queue[super_queue_index] = keycode;
+      super_queue_index++;
+      return true;
     }
-
-    SEQ_TWO_KEYS(KC_S, KC_S) {
-      register_code(KC_MINUS);
-      unregister_code(KC_MINUS);
-      chord_leader_succeeded = true;
-      return leader_end();
-    }
-
-    SEQ_TWO_KEYS(KC_U, KC_E) {
-      register_code(KC_QUOTE);
-      unregister_code(KC_QUOTE);
-      chord_leader_succeeded = true;
-      return leader_end();
-    }
-
-    SEQ_TWO_KEYS(KC_O, KC_E) {
-      register_code(KC_SCOLON);
-      unregister_code(KC_SCOLON);
-      chord_leader_succeeded = true;
-      return leader_end();
-    }
-
-    leader_end();
   }
+  return false;
 };
 
-
-
-void leader_end(void) {
-  if(!chord_leader_succeeded) {
-    register_code(KC_ESCAPE); // escape key is also the leader key for key chords
-    unregister_code(KC_ESCAPE);
-  }
-};
-
-
-
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) { // override default tap-and-hold timing on a key-basis
-    switch(keycode) {
-        case LALT_T(KC_DELETE) || LALT_T(KC_BSPACE) || RSFT_T(KC_ENTER) || RGUI_T(KC_ESCAPE): return 100;
-        default: return TAPPING_TERM;
+void super_macro(uint16_t *match_arr, void (*replace_fn)(void)) {
+  if(super_running && super_queue_index == sizeof(&match_arr) / sizeof(uint16_t)) {
+    bool resolve = true;
+    for(uint16_t kc = 0; kc < super_queue_index; kc++) {
+      if(match_arr[kc] != super_queue[kc]) {
+        resolve = false;
+        break;
+      }
     }
+    if(resolve) {
+      replace_fn();
+      super_reset();
+    }
+  }
 };
 
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if(super_record(keycode, record)) return false; // swallow keystroke
   switch(keycode) {
-
-    // re-program teensy 3.6 board
-    case KC_F9:
-      if(record->event.pressed && get_mods() & MOD_BIT(KC_PROGM)) {
-        SEND_STRING("TODO software solution to enter dfu-mode without pressing reset button in hardware?");
-      }
-      return false;
-    
-
-    // switch to PC/Windows layout
-    case KC_F7:
-      if(record->event.pressed && /*!IS_LAYER_ON(QWERTY_WINDOWS) &&*/ get_mods() & MOD_BIT(KC_PROGM)) {
-        set_single_persistent_default_layer(QWERTY_WINDOWS);
-        SEND_STRING("set default to QWERTY_WINDOWS");
-      }
-      return false;
-    
-
-    // switch to MacOS/iOS/iPadOS keyboard layout
-    case KC_F5:
-      if(record->event.pressed && /*!IS_LAYER_ON(QWERTY_MACOS) &&*/ get_mods() & MOD_BIT(KC_PROGM)) {
-        set_single_persistent_default_layer(QWERTY_MACOS);
-        SEND_STRING("set default to QWERTY_MACOS");
-      }
-      return false; // prevent default (QMK does not send events for this key)
-    
-
-    // quit current application
-    // KC_LGUI + KC_Q on mac equals to KC_LALT + KC_F4 on windows
-    case KC_Q:
-      if(record->event.pressed && /*IS_LAYER_ON(QWERTY_WINDOWS) &&*/ get_mods() & MOD_BIT(MOD_LGUI)) { //MOD_BIT(MOD_LGUI | MOD_RGUI)
-        SEND_STRING("quit application (windows only)");
-        return false;
-	    }
-    
-
-    default:
-      return true;
+    default: return true;
   }
 };
 
 
 
-void led_set_user(uint8_t usb_led) {
+void matrix_scan_user(void) {
+  super_macro(a_umlaut,       a_umlaut_macro);
+  super_macro(u_umlaut,       u_umlaut_macro);
+  super_macro(o_umlaut,       o_umlaut_macro);
+  super_macro(s_umlaut,       s_umlaut_macro);
+  super_macro(and_symbol,     and_symbol_macro);
+  super_macro(usd_symbol,     usd_symbol_macro);
+  super_macro(eur_symbol,     eur_symbol_macro);
+  super_macro(tilde_symbol,   tilde_symbol_macro);
+  super_macro(hash_symbol,    hash_symbol_macro);
+  super_macro(at_symbol,      at_symbol_macro);
+  super_macro(celcius_symbol, celcius_symbol_macro);
+  super_macro(percent_symbol, percent_symbol_macro);
+  if(super_overdue()) super_reset();
 };
