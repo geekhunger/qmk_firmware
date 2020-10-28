@@ -147,6 +147,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case LALT_T(KC_DELETE):
+    case LALT_T(KC_BSPACE):
+    case LGUI_T(KC_ESCAPE):
+    case RSFT_T(KC_ENTER):
+        return 100;
+    default:
+        return TAPPING_TERM;
+  }
+};
+
+
+
 uint16_t a_umlaut[2]       = {KC_A, KC_E};
 uint16_t u_umlaut[2]       = {KC_U, KC_E};
 uint16_t o_umlaut[2]       = {KC_O, KC_E};
@@ -155,7 +169,7 @@ uint16_t and_symbol[1]     = {KC_U};
 uint16_t usd_symbol[1]     = {KC_S};
 uint16_t eur_symbol[1]     = {KC_E};
 uint16_t tilde_symbol[1]   = {KC_N};
-uint16_t hash_symbol[1]    = {KC_H};
+uint16_t hash_symbol[2]    = {KC_H, KC_H};
 uint16_t at_symbol[1]      = {KC_L};
 uint16_t celcius_symbol[1] = {KC_C};
 uint16_t percent_symbol[1] = {KC_P};
@@ -164,8 +178,8 @@ void a_umlaut_macro(void) {tap_code(KC_QUOTE);};
 void u_umlaut_macro(void) {tap_code(KC_LBRACKET);};
 void o_umlaut_macro(void) {tap_code(KC_SCOLON);};
 void s_umlaut_macro(void) {tap_code(KC_MINUS);};
-void and_symbol_macro(void) {};
-void usd_symbol_macro(void) {};
+void and_symbol_macro(void) {SEND_STRING("&");};
+void usd_symbol_macro(void) {SEND_STRING(SS_DOWN(X_LSFT) SS_TAP(X_4) SS_UP(X_LSFT));};
 void eur_symbol_macro(void) {SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_E) SS_UP(X_LALT));};
 void tilde_symbol_macro(void) {SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_N) SS_UP(X_LALT) SS_TAP(X_SPACE));};
 void hash_symbol_macro(void) {tap_code(KC_NONUS_HASH);};
@@ -175,10 +189,11 @@ void percent_symbol_macro(void) {};
 
 
 
-uint16_t super_queue[5]; // of finite length
+uint16_t super_queue[4]; // of finite length
 uint16_t super_queue_index;
+uint16_t super_find;
 uint16_t super_timestamp;
-uint16_t super_timeout = 300; // adjust to your liking!
+uint16_t super_timeout = 400; // adjust to your liking!
 bool super_update_timeout = true; // restart timer for every new sequence segment while listening
 bool super_running = false;
 
@@ -186,12 +201,13 @@ void super_reset(void) {
   // TODO flush evenrything from buffer to the screen
   memset(super_queue, 0, sizeof(super_queue));
   super_queue_index = 0;
-  super_timestamp = timer_read();
+  super_find = 0;
+  super_timestamp = super_timeout + timer_read();
   super_running = false;
 };
 
 bool super_overdue(void) {
-  return timer_elapsed(super_timestamp) >= super_timeout || super_queue_index >= sizeof(super_queue) / sizeof(uint16_t);
+  return timer_read() >= super_timestamp || super_queue_index >= sizeof(super_queue) / sizeof(super_queue[0]);
 };
 
 bool super_record(uint16_t keycode, keyrecord_t *record) {
@@ -201,7 +217,7 @@ bool super_record(uint16_t keycode, keyrecord_t *record) {
       super_running = true;
       return true;
     } else if(super_running && !super_overdue()) {
-      if(super_update_timeout) super_timestamp = timer_read();
+      if(super_update_timeout) super_timestamp = super_timeout + timer_read();
       super_queue[super_queue_index] = keycode;
       super_queue_index++;
       return true;
@@ -211,10 +227,10 @@ bool super_record(uint16_t keycode, keyrecord_t *record) {
 };
 
 void super_macro(uint16_t *match_arr, void (*replace_fn)(void)) {
-  if(super_running && super_queue_index == sizeof(&match_arr) / sizeof(uint16_t)) {
+  if(super_running && super_queue_index == sizeof(&match_arr) / sizeof(match_arr[0])) {
     bool resolve = true;
-    for(uint16_t kc = 0; kc < super_queue_index; kc++) {
-      if(match_arr[kc] != super_queue[kc]) {
+    for(uint16_t kc = 0; kc < sizeof(super_queue) / sizeof(super_queue[0]); kc++) {
+      if((kc < super_queue_index && super_queue[kc] != match_arr[kc]) || (kc >= super_queue_index && super_queue[kc] != 0)) {
         resolve = false;
         break;
       }
