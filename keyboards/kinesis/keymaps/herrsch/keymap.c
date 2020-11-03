@@ -108,7 +108,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,      _______,            KC_LCTRL,
     // right keywell
     _______,      _______,      _______,    _______,    _______,  _______,  _______,  _______,  _______,
-    _______,      _______,      _______,    _______,    _______,  _______,
+    _______,      _______,      _______,    _______,    _______,  KC_MINUS,
     _______,      _______,      _______,    _______,    _______,  _______,
     _______,      _______,      _______,    _______,    _______,  _______,
     _______,      _______,      _______,    _______,    _______,  _______,
@@ -128,7 +128,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    DF(QWERTZ_MACOS),  XXXXXXX,  DF(QWERTZ_WINDOWS),  XXXXXXX,
     XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    XXXXXXX,
     XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    XXXXXXX,
-    XXXXXXX,      KC_KP_1,     KC_KP_2,     KC_KP_3,     KC_KP_4,    KC_KP_5,
+    XXXXXXX,      KC_1,        KC_2,        KC_3,        KC_4,       KC_5,
     XXXXXXX,      XXXXXXX,     XXXXXXX,     XXXXXXX,     XXXXXXX,    XXXXXXX,
                   XXXXXXX,     XXXXXXX,     XXXXXXX,     _______,
     // left thumb
@@ -139,7 +139,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    KC_MEDIA_PLAY_PAUSE,  KC_MEDIA_PREV_TRACK,  KC_MEDIA_NEXT_TRACK,  XXXXXXX,  _______,
     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
-    KC_KP_6,      KC_KP_7,      KC_KP_8,    KC_KP_9,    KC_KP_0,              XXXXXXX,
+    KC_6,         KC_7,         KC_8,       KC_9,       KC_0,                 XXXXXXX,
     XXXXXXX,      XXXXXXX,      XXXXXXX,    XXXXXXX,    XXXXXXX,              XXXXXXX,
                   _______,      _______,    _______,    _______,
     // right thumb
@@ -169,15 +169,62 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 
 
-#define MODELESS(...) \
+//
+// This powerful macro allows me to override or disable any modifier temporary
+// For example pressing Shift + 7 produces a normally forward slash
+// but with MUTE_MODIFIER(MOD_MASK_SHIFT, { tap_code16(LALT(KC_7)); });
+// I could produce a pipe (|) instead!
+//
+// Example:
+/*
+  switch(keycode) {
+    case KC_7:
+      if(record->event.pressed && PRESSING_MODIFIER(MOD_MASK_SHIFT)) {
+        // press Shift+7 to see how pipe (|) is returned instead of backslash (\)
+        // backslash would normally be returned because Shift is held by user and additionally Alt+7 is send by QMK
+        // it works because we mute all Shift keys and replace them entirely by Alt+7
+        MUTE_MODIFIER(MOD_MASK_SHIFT, {
+          tap_code16(LALT(keycode));
+        });
+        return false;
+      }
+  }
+*/
+// Note, to temporary disable all currently pressed modifiers, use MOD_MASK_ALL as @mask argument!
+// For more information, see https://github.com/vomindoraan/qmk_firmware/blob/76f9f2403fa8e966223140a6a4e9335615558b9d/tmk_core/common/keycode.h
+//
+// @mask is a bitmask of modifiers, that must be muted - could be e.g. MOD_BIT(KC_LCTRL | KC_LCTRL) or MOD_MASK_CTRL
+// @modifiers are all currently pressed modifiers
+// @modifier_unmuted check if the @mask is really pressed right now (=included in @modifiers)
+// @unmasked is the final bitmask after removing @mask from @modifiers
+//
+// useful funcs...
+// const bool mask_present = PRESSING_MODIFIER((mask));
+// const bool mask_present = (modifiers & (mask)) != 0;
+// const uint8_t modifiers = get_mods();
+// const uint8_t unmasked = modifiers & ~(mask);
+// clear_mods();
+// clear_keyboard();
+// clear_keyboard_but_mods()
+// unregister_mods(mask);
+// register_mods(mask);
+// del_mods(mask);
+// add_mods(mask);
+// set_mods(unmasked);
+// send_keyboard_report();
+//
+
+// check if modifier keys are pressed
+// @mask could be e.g. MOD_MASK_SHIFT or MOD_MASK_GUI
+#define PRESSING_MODIFIER(mask) ((get_mods() & (mask)) != 0)
+
+#define MUTE_MODIFIER(mask, ...) \
   do { \
-    /*const uint8_t _modifiers = get_mods();*/ \
-    /*del_mods(_modifiers);*/ \
-    /*clear_mods();*/ \
-    clear_keyboard(); \
-    /*send_keyboard_report();*/ \
+    const uint16_t modifiers = get_mods(); \
+    const uint16_t filtered = modifiers & ~(mask); \
+    set_mods(filtered); \
     {__VA_ARGS__} \
-    /*set_mods(_modifiers);*/ \
+    set_mods(modifiers); \
   } while(0)
 
 
@@ -234,15 +281,6 @@ void tap_dance_multitap_reset(qk_tap_dance_state_t *state, void *user_data) {
 // KC_GRAVE is ^ and LSFT(KC_NONUS_BSLASH) is °
 // X_MINUS is ß
 
-/*
-SEND_STRING(SS_DOWN(X_RALT)); // type codes on windows... expample
-SEND_STRING(SS_TAP(X_KP_0));
-SEND_STRING(SS_TAP(X_KP_1));
-SEND_STRING(SS_TAP(X_KP_6));
-SEND_STRING(SS_TAP(X_KP_3));
-SEND_STRING(SS_UP(X_RALT));
-*/
-
 
 
 void kcc_a(qk_tap_dance_state_t *state, void *user_data) {
@@ -258,6 +296,8 @@ void kcc_a(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_A);
 };
 
+
+
 void kcc_s(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   switch(tap_dance_multitap.state) {
@@ -271,36 +311,79 @@ void kcc_s(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_S);
 };
 
+
+
 void kcc_d(qk_tap_dance_state_t *state, void *user_data) {
-  bool holding_alt = get_mods() & MOD_MASK_ALT; //get_mods() & MOD_BIT(KC_LALT) || get_mods() & MOD_BIT(KC_RALT);
-  bool holding_shift = get_mods() & MOD_MASK_SHIFT; //get_mods() & MOD_BIT(KC_LSFT) || get_mods() & MOD_BIT(KC_RSFT);
   tap_dance_multitap.state = get_tap_dance_state(state);
   switch(tap_dance_multitap.state) {
     case TRIPLE_TAP:
-      if(holding_alt) {
-        if(IS_QWERTZ_WINDOWS) MODELESS({tap_code16(RALT(KC_NONUS_BSLASH));});
-        else tap_code16(LALT(KC_7)); // | pipe
-      } else if(holding_shift) {
-        if(IS_QWERTZ_WINDOWS) MODELESS({tap_code16(RALT(KC_MINUS));});
-        else tap_code16(LSFT(LALT(KC_7))); // \ backslash
+      if(PRESSING_MODIFIER(MOD_MASK_ALT)) {
+        if(IS_QWERTZ_WINDOWS) {
+          MUTE_MODIFIER(MOD_MASK_ALT, {
+            tap_code16(ALGR(KC_NONUS_BSLASH));
+          });
+        } else {
+          tap_code(KC_7); // | pipe
+        }
+      } else if(PRESSING_MODIFIER(MOD_MASK_SHIFT)) {
+          if(IS_QWERTZ_WINDOWS) {
+            //MUTE_MODIFIER(MOD_MASK_SHIFT, {
+              //tap_code16(ALGR(KC_MINUS)); // F*****CK! For some reason the Shift modifier does not get cleared from pressed modifiers at this point?!
+              //register_code(KC_LSHIFT); // This is why we do not need to send it again...
+              register_code(KC_LALT); // AAAAAnnd we need to fake the backslash by pressing an alt+92 keycode on Windows... such an ugly solution!
+              tap_code(KC_KP_0);
+              tap_code(KC_KP_0);
+              tap_code(KC_KP_9);
+              tap_code(KC_KP_2);
+              unregister_code(KC_LALT);
+              //unregister_code(KC_LSHIFT);
+            //});
+          } else {
+            // add alt-modifier on top of already pressed shift...
+            tap_code16(LALT(KC_7)); // \ backslash
+          }
       } else {
         tap_code16(LSFT(KC_7)); // / forward slash
       }
       return;
+    
     case TRIPLE_HOLD:
-      if(holding_alt) {
-        if(IS_QWERTZ_WINDOWS) MODELESS({tap_code16(RALT(KC_NONUS_BSLASH)); tap_code16(RALT(KC_NONUS_BSLASH));});
-        else SEND_STRING(SS_LALT("77")); // | pipe
-      } else if(holding_shift) {
-        if(IS_QWERTZ_WINDOWS) MODELESS({tap_code16(RALT(KC_MINUS)); tap_code16(RALT(KC_MINUS));});
-        else SEND_STRING(SS_LSFT(SS_LALT("77"))); // \ backslash
+      if(PRESSING_MODIFIER(MOD_MASK_ALT)) {
+        if(IS_QWERTZ_WINDOWS) {
+          MUTE_MODIFIER(MOD_MASK_ALT, {
+            tap_code16(ALGR(KC_NONUS_BSLASH));
+            tap_code16(ALGR(KC_NONUS_BSLASH));
+          });
+        } else {
+          SEND_STRING("77"); // | pipe
+        }
+      } else if(PRESSING_MODIFIER(MOD_MASK_SHIFT)) {
+        if(IS_QWERTZ_WINDOWS) {
+          register_code(KC_LALT);
+          tap_code(KC_KP_0);
+          tap_code(KC_KP_0);
+          tap_code(KC_KP_9);
+          tap_code(KC_KP_2);
+          unregister_code(KC_LALT);
+          register_code(KC_LALT);
+          tap_code(KC_KP_0);
+          tap_code(KC_KP_0);
+          tap_code(KC_KP_9);
+          tap_code(KC_KP_2);
+          unregister_code(KC_LALT);
+        } else {
+          SEND_STRING(SS_LALT("77")); // \ backslash
+        }
       } else {
         SEND_STRING(SS_LSFT("77")); // / forward slash
       }
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_D);
 };
+
+
 
 void kcc_e(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -310,6 +393,8 @@ void kcc_e(qk_tap_dance_state_t *state, void *user_data) {
   }
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_E);
 };
+
+
 
 void kcc_c(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -329,6 +414,8 @@ void kcc_c(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_C);
 };
 
+
+
 void kcc_r(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   if(tap_dance_multitap.state == TRIPLE_TAP) {
@@ -347,18 +434,20 @@ void kcc_r(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_R);
 };
 
+
+
 void kcc_t(qk_tap_dance_state_t *state, void *user_data) {
-  bool holding_shift = get_mods() & MOD_MASK_SHIFT;
   tap_dance_multitap.state = get_tap_dance_state(state);
   switch(tap_dance_multitap.state) {
     case SINGLE_HOLD:
-      if(holding_shift) {
+      if(PRESSING_MODIFIER(MOD_MASK_SHIFT)) {
         tap_code(KC_2); // "
       } else {
         if(IS_QWERTZ_WINDOWS) tap_code16(LSFT(KC_BSLASH));
         else SEND_STRING(SS_DOWN(X_LALT) SS_TAP(X_EQUAL) SS_UP(X_LALT)); // '
       }
       return;
+    
     case TRIPLE_TAP:
       if(IS_QWERTZ_WINDOWS) {
         register_code(KC_LALT);
@@ -372,33 +461,42 @@ void kcc_t(qk_tap_dance_state_t *state, void *user_data) {
       }
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_T);
 };
+
+
 
 void kcc_f(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   if(tap_dance_multitap.state == SINGLE_HOLD) {
-    if(IS_QWERTZ_WINDOWS) tap_code16(RALT(KC_7));
+    if(IS_QWERTZ_WINDOWS) tap_code16(ALGR(KC_7));
     else tap_code16(LALT(KC_8)); // {
     return;
   }
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_F);
 };
 
+
+
 void kcc_g(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
+
   switch(tap_dance_multitap.state) {
     case SINGLE_HOLD:
       tap_code16(LSFT(KC_8)); // (
       return;
+    
     case DOUBLE_HOLD:
-      if(IS_QWERTZ_WINDOWS) tap_code16(RALT(KC_8));
+      if(IS_QWERTZ_WINDOWS) tap_code16(ALGR(KC_8));
       else tap_code16(LALT(KC_5)); // [
       return;
+    
     case TRIPLE_TAP:
       if(IS_QWERTZ_WINDOWS) tap_code(KC_GRAVE);
       else tap_code(KC_NONUS_BSLASH); // ^
       return;
+    
     case TRIPLE_HOLD:
       if(IS_QWERTZ_WINDOWS) {
         tap_code(KC_GRAVE);
@@ -409,8 +507,11 @@ void kcc_g(qk_tap_dance_state_t *state, void *user_data) {
       }
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_G);
 };
+
+
 
 void kcc_b(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -422,32 +523,42 @@ void kcc_b(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_B);
 };
 
+
+
 void kcc_z(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   if(tap_dance_multitap.state == SINGLE_HOLD) {
-    if(IS_QWERTZ_WINDOWS) tap_code16(RALT(KC_0));
+    if(IS_QWERTZ_WINDOWS) tap_code16(ALGR(KC_0));
     else SEND_STRING(SS_LALT("9")); // }
     return;
   }
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_Y);
 };
 
+
+
 void kcc_h(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
+
   switch(tap_dance_multitap.state) {
     case SINGLE_HOLD:
       SEND_STRING(SS_LSFT("9")); // )
       return;
+    
     case DOUBLE_HOLD:
-      if(IS_QWERTZ_WINDOWS) tap_code16(RALT(KC_9));
+      if(IS_QWERTZ_WINDOWS) tap_code16(ALGR(KC_9));
       else SEND_STRING(SS_LALT("6")); // ]
       return;
+    
     case TRIPLE_TAP:
       SEND_STRING(SS_TAP(X_BSLASH)); // #
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_H);
 };
+
+
 
 void kcc_j(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -459,31 +570,41 @@ void kcc_j(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_J);
 };
 
+
+
 void kcc_u(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
+
   switch(tap_dance_multitap.state) {
     case SINGLE_HOLD:
       tap_code(KC_LBRACKET); // ü
       return;
+    
     case TRIPLE_TAP:
       SEND_STRING(SS_LSFT("6")); // &
       return;
+    
     case TRIPLE_HOLD:
       SEND_STRING(SS_LSFT("66")); // &&
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_U);
 };
+
+
 
 void kcc_n(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   if(tap_dance_multitap.state == TRIPLE_TAP) {
-    if(IS_QWERTZ_WINDOWS) tap_code16(RALT(KC_RBRACKET));
+    if(IS_QWERTZ_WINDOWS) tap_code16(ALGR(KC_RBRACKET));
     else SEND_STRING(SS_LALT("n")); // ~
     return;
   }
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_N);
 };
+
+
 
 void kcc_m(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -494,40 +615,54 @@ void kcc_m(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_M);
 };
 
+
+
 void kcc_k(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
+
   switch(tap_dance_multitap.state) {
     case TRIPLE_TAP:
       tap_code16(LSFT(KC_0)); // =
       return;
+
     case TRIPLE_HOLD:
       tap_code16(LSFT(KC_0)); // ==
       tap_code16(LSFT(KC_0));
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_K);
 };
 
+
+
 void kcc_i(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
+
   switch(tap_dance_multitap.state) {
     case TRIPLE_TAP:
       tap_code(KC_KP_PLUS); // +
       return;
+
     case TRIPLE_HOLD:
       tap_code(KC_KP_PLUS); // ++
       tap_code(KC_KP_PLUS);
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_I);
 };
 
+
+
 void kcc_o(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
+
   switch(tap_dance_multitap.state) {
     case SINGLE_HOLD:
       tap_code(KC_SCOLON); // ö
       return;
+
     case TRIPLE_TAP:
       if(IS_QWERTZ_WINDOWS) {
         register_code(KC_LALT);
@@ -541,18 +676,23 @@ void kcc_o(qk_tap_dance_state_t *state, void *user_data) {
       }
       return;
   }
+
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_O);
 };
+
+
 
 void kcc_l(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   if(tap_dance_multitap.state == TRIPLE_TAP) {
-    if(IS_QWERTZ_WINDOWS) tap_code16(RALT(KC_Q));
+    if(IS_QWERTZ_WINDOWS) tap_code16(ALGR(KC_Q));
     else SEND_STRING(SS_LALT("l")); // @
     return;
   }
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_L);
 };
+
+
 
 void kcc_p(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -563,6 +703,8 @@ void kcc_p(qk_tap_dance_state_t *state, void *user_data) {
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_P);
 };
 
+
+
 void kcc_comma(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
   if(tap_dance_multitap.state == SINGLE_HOLD) {
@@ -571,6 +713,8 @@ void kcc_comma(qk_tap_dance_state_t *state, void *user_data) {
   }
   for(uint8_t n = 1; n <= state->count; n++) tap_code(KC_COMMA);
 };
+
+
 
 void kcc_dot(qk_tap_dance_state_t *state, void *user_data) {
   tap_dance_multitap.state = get_tap_dance_state(state);
@@ -612,17 +756,50 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case KC_Q:
-      if(record->event.pressed && get_mods() & MOD_MASK_CTRL) {
-        MODELESS({ // forget about current key and modifier being presses and handle manually...
+  if(record->event.pressed && IS_QWERTZ_WINDOWS && PRESSING_MODIFIER(MOD_MASK_CTRL)) {
+    // TODO ctrl + tab should work (maybe change only index finger to lalt? - which is right now set to lctrl)
+    // TODO ctrl + h should hide current window (or at least everything if no other possible on windows)
+    // TODO somehow make default layer switching persistent (there is a function but it seems not to work...)
+    // TODO use leds to show what is curretnly happening (or play knight rider anmation while idle'ing)
+    // TODO use leader key to trigger macros for common programming tasks? like creating a function scaffold or something?
+
+    switch(keycode) {
+      case KC_Q:
+        MUTE_MODIFIER(MOD_MASK_CTRL, {
           tap_code16(LALT(KC_F4)); // send Alt+F4 to emulate Cmd + Q from MacOS
         });
         return false;
-      }
-    default:
-      return true;
+      
+      case KC_LEFT:
+        MUTE_MODIFIER(MOD_MASK_CTRL, {
+          tap_code(KC_HOME); // jump to beginning of line or file
+        });
+        return false;
+      
+      case KC_UP:
+        MUTE_MODIFIER(MOD_MASK_CTRL, {
+          tap_code16(LCTL(KC_HOME)); // KC_PGUP
+        });
+        return false;
+      
+      case KC_RIGHT:
+        MUTE_MODIFIER(MOD_MASK_CTRL, {
+          tap_code(KC_END); // jump to end of line or file
+        });
+        return false;
+
+      case KC_DOWN:
+        MUTE_MODIFIER(MOD_MASK_CTRL, {
+          tap_code16(LCTL(KC_END)); // KC_PGDOWN
+        });
+        return false;
+
+      default:
+        return true;
+    }
   }
+
+  return true;
 };
 
 
