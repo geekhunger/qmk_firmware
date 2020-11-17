@@ -92,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // right thumb
     XXXXXXX,  KC_BSPACE,
     XXXXXXX,
-    XXXXXXX,  XXXXXXX,  KC_0
+    XXXXXXX,  KC_RSHIFT,  KC_0
   ),
 };
 
@@ -129,24 +129,20 @@ bool has_mods(uint8_t mask) {return (weak_mods_have(mask) || real_mods_have(mask
   tap_code16(KC_NUMLOCK); \
 }
 
-#define report(loops, ...) { \
+#define key_report(loops, ...) { \
   for(uint8_t n = 1; n <= loops; n++) { \
     {__VA_ARGS__} \
   } \
 }
 
-void pass(qk_tap_dance_state_t *state) {
+void key_pass(qk_tap_dance_state_t *state) {
   if(has_mods(MOD_MASK_GUI | MOD_MASK_CTRL)) {
     tap_code(state->keycode); // tap key only once for OS commands
     return;
   }
-  report(state->count, {
+  key_report(state->count, {
     tap_code(state->keycode);
   });
-};
-
-void key_pass(qk_tap_dance_state_t *state, void *user_data) {
-  pass(state); // do not modify anything, just pass the keycode straight out again
 };
 
 bool key_up(qk_tap_dance_state_t *state) {return state->interrupted || !state->pressed;};
@@ -163,11 +159,11 @@ void q(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) { // alt pressed (additionally shift might be present)
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -175,11 +171,11 @@ void q(qk_tap_dance_state_t *state, void *user_data) {
 void w(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -205,7 +201,7 @@ void e(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG)) { // shift or alt pressed (but gui or ctrl are NOT present)
     if(has_mods(MOD_MASK_SHIFT)) { // shift is present
       without_mods(MOD_MASK_ALT, {
-        pass(state);
+        key_pass(state);
       });
     } else { // alt is present
       without_mods(MOD_MASK_ALT, {
@@ -214,7 +210,7 @@ void e(qk_tap_dance_state_t *state, void *user_data) {
     }
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -223,7 +219,7 @@ void r(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG)) { // shift or alt pressed
     if(has_mods(MOD_MASK_SHIFT)) { // shift is present
       without_mods(MOD_MASK_ALT, {
-        pass(state);
+        key_pass(state);
       });
     } else { // alt is present
       without_mods(MOD_MASK_SA, {
@@ -240,7 +236,7 @@ void r(qk_tap_dance_state_t *state, void *user_data) {
     }
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -257,11 +253,11 @@ void f(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -277,7 +273,7 @@ void a(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) { // alt but no shift pressed (ctrl or gui may be present)
     without_mods(MOD_MASK_ALT, {
-      report(state->count, {
+      key_report(state->count, {
         tap_code(KC_KP_PLUS); // numpad plus (+)
       });
     });
@@ -285,11 +281,11 @@ void a(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) { // alt+shift but no ctrl or gui
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -313,7 +309,7 @@ void s(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      report(state->count, {
+      key_report(state->count, {
         tap_code(KC_KP_MINUS); // numpad minus (-)
       });
     });
@@ -321,11 +317,11 @@ void s(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -346,7 +342,7 @@ void d(qk_tap_dance_state_t *state, void *user_data) {
         });
       } else if(has_mods(MOD_MASK_ALT)) {
         without_mods(MOD_MASK_SA, {
-          report(state->count, {
+          key_report(state->count, {
             if(is_mac()) {
               tap_code16(LALT(KC_7)); // pipe
             } else if(is_win()) {
@@ -359,7 +355,7 @@ void d(qk_tap_dance_state_t *state, void *user_data) {
           });
         });
       } else {
-        report(state->count, {
+        key_report(state->count, {
           tap_code16(LSFT(KC_7)); // forward slash
         });
       }
@@ -368,7 +364,7 @@ void d(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      report(state->count, {
+      key_report(state->count, {
         tap_code(KC_KP_SLASH); // numpad devide (/)
       });
     });
@@ -376,11 +372,11 @@ void d(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -418,11 +414,11 @@ void t(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -459,11 +455,11 @@ void g(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -471,11 +467,11 @@ void g(qk_tap_dance_state_t *state, void *user_data) {
 void z(qk_tap_dance_state_t *state, void *user_data) { // german y
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -483,11 +479,11 @@ void z(qk_tap_dance_state_t *state, void *user_data) { // german y
 void x(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -523,11 +519,11 @@ void c(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -556,11 +552,11 @@ void v(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 void v_off(qk_tap_dance_state_t *state, void *user_data) {
@@ -574,7 +570,7 @@ void b(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
-          report(min(2, state->count), {
+          key_report(min(2, state->count), {
             if(is_mac()) tap_code(KC_NONUS_BSLASH); // ^
             else if(is_win()) tap_code(KC_GRAVE);
           });
@@ -590,11 +586,11 @@ void b(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -611,11 +607,11 @@ void y(qk_tap_dance_state_t *state, void *user_data) { // geman z
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -646,11 +642,11 @@ void u(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -674,11 +670,11 @@ void i(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -708,11 +704,11 @@ void o(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -735,7 +731,7 @@ void h(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      report(state->count, {
+      key_report(state->count, {
         tap_code(KC_BSLASH); // #
       });
     });
@@ -743,11 +739,11 @@ void h(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -762,11 +758,11 @@ void n(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -774,7 +770,7 @@ void n(qk_tap_dance_state_t *state, void *user_data) {
 void k(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      report(state->count, {
+      key_report(state->count, {
         tap_code16(LSFT(KC_0)); // =
       });
     });
@@ -782,11 +778,11 @@ void k(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -801,11 +797,11 @@ void l(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -830,7 +826,7 @@ void p(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG)) {
     if(has_mods(MOD_MASK_SHIFT)) {
       without_mods(MOD_MASK_ALT, {
-        pass(state);
+        key_pass(state);
       });
     } else {
       without_mods(MOD_MASK_ALT, {
@@ -839,7 +835,7 @@ void p(qk_tap_dance_state_t *state, void *user_data) {
     }
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -857,18 +853,18 @@ void j(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG)) {
     if(has_mods(MOD_MASK_SHIFT)) {
       without_mods(MOD_MASK_ALT, {
-        pass(state);
+        key_pass(state);
       });
     } else {
       without_mods(MOD_MASK_ALT, {
-        report(state->count, {
+        key_report(state->count, {
           tap_code16(LSFT(KC_6)); // &
         });
       });
     }
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -893,26 +889,26 @@ void m(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG)) {
     if(has_mods(MOD_MASK_SHIFT)) {
       without_mods(MOD_MASK_ALT, {
-        pass(state);
+        key_pass(state);
       });
     } else {
       without_mods(MOD_MASK_ALT, {
-        report(state->count, {
+        key_report(state->count, {
           tap_code(KC_KP_ASTERISK); // numpad multiply (*)
         });
       });
     }
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
 
 void comma(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
-    without_mods(MOD_MASK_ALT, {
-      report(state->count, {
+    without_mods(MOD_MASK_CSAG, {
+      key_report(state->count, {
         tap_code16(LSFT(KC_MINUS)); // ?
       });
     });
@@ -920,11 +916,11 @@ void comma(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -950,18 +946,18 @@ void dot(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG)) {
     if(has_mods(MOD_MASK_SHIFT)) {
       without_mods(MOD_MASK_ALT, {
-        pass(state);
+        key_pass(state);
       });
     } else {
-      without_mods(MOD_MASK_ALT, {
-        report(state->count, {
+      without_mods(MOD_MASK_CSAG, {
+        key_report(state->count, {
           tap_code16(LSFT(KC_1)); // !
         });
       });
     }
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -982,11 +978,11 @@ void slash(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && has_mods(MOD_MASK_SHIFT) && !has_mods(MOD_MASK_CG)) {
     without_mods(MOD_MASK_ALT, {
-      pass(state);
+      key_pass(state);
     });
     return;
   }
-  pass(state);
+  key_pass(state);
 };
 
 
@@ -1026,75 +1022,91 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case DF(MACOS): set_single_persistent_default_layer(MACOS); return true; // might not work, because no eeprom region defined in kinT settings
-    case DF(WINDOWS): set_single_persistent_default_layer(WINDOWS); return true;
+  switch(keycode) { // might not work, because no eeprom region defined in kinT settings
+    case DF(MACOS):
+      if(!is_mac()) {
+        set_single_persistent_default_layer(MACOS);
+        return true;
+      }
+    case DF(WINDOWS):
+      if(!is_win()) {
+        set_single_persistent_default_layer(WINDOWS);
+        return true;
+      }
   }
 
-  if(is_win() && record->event.pressed) {
+  if(is_win() && record->event.pressed && !has_mods(MOD_MASK_AG) && has_mods(MOD_MASK_CTRL)) {
+    switch(keycode) {
+      case KC_LEFT:
+        without_mods(MOD_MASK_CTRL, {
+          tap_code(KC_HOME); // jump to beginning of line or file
+        });
+        return false;
+      
+      case KC_UP:
+        without_mods(MOD_MASK_CTRL, {
+          tap_code16(LCTL(KC_HOME)); // KC_PGUP
+        });
+        return false;
+      
+      case KC_RIGHT:
+        without_mods(MOD_MASK_CTRL, {
+          tap_code(KC_END); // jump to end of line or file
+        });
+        return false;
 
-    if(!has_mods(MOD_MASK_AG) && has_mods(MOD_MASK_CTRL)) {
-      switch(keycode) {
-        case KC_LEFT:
-          without_mods(MOD_MASK_CTRL, {
-            tap_code(KC_HOME); // jump to beginning of line or file
-          });
-          return false;
-        
-        case KC_UP:
-          without_mods(MOD_MASK_CTRL, {
-            tap_code16(LCTL(KC_HOME)); // KC_PGUP
-          });
-          return false;
-        
-        case KC_RIGHT:
-          without_mods(MOD_MASK_CTRL, {
-            tap_code(KC_END); // jump to end of line or file
-          });
-          return false;
-
-        case KC_DOWN:
-          without_mods(MOD_MASK_CTRL, {
-            tap_code16(LCTL(KC_END)); // KC_PGDOWN
-          });
-          return false;
-        
-        case RALT_T(KC_DELETE):
-        case KC_DELETE:
-          without_mods(MOD_MASK_CS, {
-            tap_code16(LSFT(KC_END)); // select everything to the right
-            tap_code(KC_DELETE);
-          });
-          return false;
-        
-        case RALT_T(KC_BSPACE):
-        case KC_BSPACE:
-          without_mods(MOD_MASK_CS, {
-            tap_code16(LSFT(KC_HOME)); // select everything to the left
-            tap_code(KC_BSPACE);
-          });
-          return false;
-      }
+      case KC_DOWN:
+        without_mods(MOD_MASK_CTRL, {
+          tap_code16(LCTL(KC_END)); // KC_PGDOWN
+        });
+        return false;
+      
+      case RALT_T(KC_DELETE):
+      case KC_DELETE:
+        without_mods(MOD_MASK_CS, {
+          tap_code16(LSFT(KC_END)); // select everything to the right
+          tap_code(KC_DELETE);
+        });
+        return false;
+      
+      case RALT_T(KC_BSPACE):
+      case KC_BSPACE:
+        without_mods(MOD_MASK_CS, {
+          tap_code16(LSFT(KC_HOME)); // select everything to the left
+          tap_code(KC_BSPACE);
+        });
+        return false;
     }
+  }
 
-    if(!has_mods(MOD_MASK_CSG) && has_mods(MOD_MASK_ALT)) {
-      switch(keycode) {
-        case RALT_T(KC_DELETE):
-        case KC_DELETE:
-          without_mods(MOD_MASK_ALT, {
-            tap_code16(LCTL(KC_DELETE)); // delete word to the right
-          });
-          return false;
-        
-        case RALT_T(KC_BSPACE):
-        case KC_BSPACE:
-          without_mods(MOD_MASK_ALT, {
-            tap_code16(LCTL(KC_BSPACE)); // delete word to the left
-          });
-          return false;
-      }
+  if(is_win() && record->event.pressed && !has_mods(MOD_MASK_CSG) && has_mods(MOD_MASK_ALT)) {
+    switch(keycode) {
+      case KC_LEFT:
+        without_mods(MOD_MASK_ALT, {
+          tap_code16(LCTL(keycode)); // jump over word to the left
+        });
+        return false;
+      
+      case KC_RIGHT:
+        without_mods(MOD_MASK_ALT, {
+          tap_code16(LCTL(keycode)); // jump over word to the right
+        });
+        return false;
+      
+      case RALT_T(KC_DELETE):
+      case KC_DELETE:
+        without_mods(MOD_MASK_ALT, {
+          tap_code16(LCTL(KC_DELETE)); // delete word to the right
+        });
+        return false;
+      
+      case RALT_T(KC_BSPACE):
+      case KC_BSPACE:
+        without_mods(MOD_MASK_ALT, {
+          tap_code16(LCTL(KC_BSPACE)); // delete word to the left
+        });
+        return false;
     }
-
   }
 
   return true;
