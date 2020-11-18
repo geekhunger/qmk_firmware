@@ -10,6 +10,11 @@ enum keyboard_layer {
   NUMPAD,
 };
 
+enum os_layout_key {
+  MAC = SAFE_RANGE,
+  WIN
+};
+
 // IMPORTANT NOTE!!!
 // I messed up my wiring because I suck at electronics and now my fn keys are swapped^^
 // I swap them to right positions in software, see down below...
@@ -72,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [NUMPAD] = LAYOUT(
     // left keywell
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    DF(MACOS),  DF(WINDOWS),  XXXXXXX,  XXXXXXX,
+    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    MAC,      WIN,  XXXXXXX,  XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
@@ -103,10 +108,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define min(a, b) ((a < b) ? a : b)
 #define max(a, b) ((a > b) ? a : b)
 
-bool is_mac(void) {return (default_layer_state & (1UL << WINDOWS)) == 0;};
-bool is_win(void) {return (default_layer_state & (1UL << MACOS)) == 0;};
-//persistant_default_layer_set(1UL << WINDOWS); // taken from internet
-//set_single_persistent_default_layer(WINDOWS); // this actually found in source (plays audio if active, then stores in eeprom, then calls default_layer_set)
+bool is_mac(void) {return (default_layer_state & (1UL << MACOS)) != 0;};
+bool is_win(void) {return (default_layer_state & (1UL << WINDOWS)) != 0;};
 
 bool real_mods_have(uint8_t mask) {return (get_mods() & mask) != 0;};
 bool weak_mods_have(uint8_t mask) {return (get_weak_mods() & mask) != 0;};
@@ -1022,17 +1025,13 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) { // might not work, because no eeprom region defined in kinT settings
-    case DF(MACOS):
-      if(!is_mac()) {
-        set_single_persistent_default_layer(MACOS);
-        return true;
-      }
-    case DF(WINDOWS):
-      if(!is_win()) {
-        set_single_persistent_default_layer(WINDOWS);
-        return true;
-      }
+  switch(keycode) {
+    case MAC:
+      set_single_persistent_default_layer(MACOS);
+      return false;
+    case WIN:
+      set_single_persistent_default_layer(WINDOWS);
+      return false;
   }
 
   if(is_win() && record->event.pressed && !has_mods(MOD_MASK_AG) && has_mods(MOD_MASK_CTRL)) {
