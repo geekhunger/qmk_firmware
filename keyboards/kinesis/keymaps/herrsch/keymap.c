@@ -45,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // right thumb
     XXXXXXX,            LALT_T(KC_BSPACE),
     XXXXXXX,
-    LGUI_T(KC_ESCAPE),  KC_RSHIFT,        KC_ENTER
+    LGUI_T(KC_ESCAPE),  RSFT(KC_ENTER),   MO(NUMPAD)
   ),
 
 
@@ -80,24 +80,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    MAC,      WIN,  XXXXXXX,  XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
+    XXXXXXX,      KC_1,      KC_2,      KC_3,       KC_4,       KC_5,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    _______,    XXXXXXX,
                   XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,
     // left thumb
                   XXXXXXX,   XXXXXXX,
                              _______,
-    XXXXXXX,      XXXXXXX,   _______,
+    _______,      XXXXXXX,   _______,
     // right keywell
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    KC_MEDIA_PLAY_PAUSE,  KC_MEDIA_PREV_TRACK,  KC_MEDIA_NEXT_TRACK,  XXXXXXX,  XXXXXXX,
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,              XXXXXXX,
-    XXXXXXX,      KC_7,      KC_8,      KC_9,       XXXXXXX,              XXXXXXX,
-    XXXXXXX,      KC_4,      KC_5,      KC_6,       XXXXXXX,              XXXXXXX,
-    XXXXXXX,      KC_1,      KC_2,      KC_3,       XXXXXXX,              XXXXXXX,
+    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,     XXXXXXX,
+    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,     XXXXXXX,
+    KC_6,         KC_7,      KC_8,      KC_9,       KC_0,        XXXXXXX,
+    XXXXXXX,      XXXXXXX,   KC_COMMA,  KC_DOT,     XXXXXXX,     XXXXXXX,
                   XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,
     // right thumb
     XXXXXXX,  KC_BSPACE,
     XXXXXXX,
-    XXXXXXX,  KC_RSHIFT,  KC_0
+    XXXXXXX,  KC_RSHIFT,  _______
   ),
 };
 
@@ -108,8 +108,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define min(a, b) ((a < b) ? a : b)
 #define max(a, b) ((a > b) ? a : b)
 
-bool is_mac(void) {return (default_layer_state & (1UL << MACOS)) != 0;};
-bool is_win(void) {return (default_layer_state & (1UL << WINDOWS)) != 0;};
+bool is_mac(void) {return default_layer_state == (1UL << MACOS);};
+bool is_win(void) {return default_layer_state == (1UL << WINDOWS);};
 
 bool real_mods_have(uint8_t mask) {return (get_mods() & mask) != 0;};
 bool weak_mods_have(uint8_t mask) {return (get_weak_mods() & mask) != 0;};
@@ -139,7 +139,7 @@ bool has_mods(uint8_t mask) {return (weak_mods_have(mask) || real_mods_have(mask
 }
 
 void key_pass(qk_tap_dance_state_t *state) {
-  if(has_mods(MOD_MASK_GUI | MOD_MASK_CTRL)) {
+  if((is_mac() && has_mods(MOD_MASK_GUI)) || (is_win() && has_mods(MOD_MASK_CTRL))) {
     tap_code(state->keycode); // tap key only once for OS commands
     return;
   }
@@ -389,8 +389,7 @@ void t(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
-          if(is_mac()) tap_code16(LALT(KC_EQUAL)); // '
-          else if(is_win()) tap_code16(LSFT(KC_BSLASH));
+          tap_code16(LSFT(KC_BSLASH)); // '
         });
       } else {
         without_mods(MOD_MASK_ALT, {
@@ -532,12 +531,6 @@ void c(qk_tap_dance_state_t *state, void *user_data) {
 
 
 void v(qk_tap_dance_state_t *state, void *user_data) {
-  if(key_down(state)) {
-    if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) {
-      layer_on(NUMPAD);
-      return;
-    }
-  }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_SA, {
       if(is_mac()) {
@@ -560,10 +553,6 @@ void v(qk_tap_dance_state_t *state, void *user_data) {
     return;
   }
   key_pass(state);
-};
-
-void v_off(qk_tap_dance_state_t *state, void *user_data) {
-  layer_off(NUMPAD); // always turn off numpad when physical key released
 };
 
 
@@ -1004,7 +993,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   [KC_Z] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, z, NULL, HOLD_TIMER), // german y
   [KC_X] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, x, NULL, HOLD_TIMER),
   [KC_C] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, c, NULL, HOLD_TIMER),
-  [KC_V] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, v, v_off, HOLD_TIMER),
+  [KC_V] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, v, NULL, HOLD_TIMER),
   [KC_B] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, b, NULL, HOLD_TIMER),
   [KC_Y] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, y, NULL, HOLD_TIMER), // german z
   [KC_U] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, u, NULL, HOLD_TIMER),
