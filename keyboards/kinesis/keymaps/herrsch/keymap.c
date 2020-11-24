@@ -27,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // left keywell
     XXXXXXX,      KC_F2,      KC_F1,      KC_F3,      KC_F5,           KC_F4,       KC_F6,  KC_F8,  KC_F7,
     XXXXXXX,      KC_1,       KC_2,       KC_3,       KC_4,            KC_5,
-    XXXXXXX,      TD(KC_Q),   TD(KC_W),   TD(KC_E),   TD(KC_R),        TD(KC_F),
+    XXXXXXX,      XXXXXXX,    TD(KC_W),   TD(KC_E),   TD(KC_R),        TD(KC_F),
     XXXXXXX,      TD(KC_A),   TD(KC_S),   TD(KC_D),   TD(KC_T),        TD(KC_G),
     XXXXXXX,      TD(KC_Z),   TD(KC_X),   TD(KC_C),   TD(KC_V),        TD(KC_B),
                   XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,
@@ -77,12 +77,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [NUMPAD] = LAYOUT(
     // left keywell
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    MAC,      WIN,  XXXXXXX,  XXXXXXX,
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
-    XXXXXXX,      KC_1,      KC_2,      KC_3,       KC_4,       KC_5,
-    XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,    XXXXXXX,
-                  XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,
+    XXXXXXX,      KC_BRIGHTNESS_UP,   KC_BRIGHTNESS_DOWN,   XXXXXXX,    XXXXXXX,    MAC,      WIN,  XXXXXXX,  XXXXXXX,
+    XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
+    XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
+    XXXXXXX,      KC_1,               KC_2,                 KC_3,       KC_4,       KC_5,
+    XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
+                  XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,
     // left thumb
                   XXXXXXX,   XXXXXXX,
                              _______,
@@ -150,24 +150,6 @@ void key_pass(qk_tap_dance_state_t *state) {
 
 bool key_up(qk_tap_dance_state_t *state) {return state->interrupted || !state->pressed;};
 bool key_down(qk_tap_dance_state_t *state) {return state->pressed && !state->interrupted;};
-
-
-
-void q(qk_tap_dance_state_t *state, void *user_data) {
-  if(is_win() && has_mods(MOD_MASK_CTRL)) {
-    without_mods(MOD_MASK_CSAG, {
-      tap_code16(LALT(KC_F4)); // send Alt+F4 to emulate Cmd + Q on MacOS
-    });
-    return;
-  }
-  if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) { // alt pressed (additionally shift might be present)
-    without_mods(MOD_MASK_ALT, {
-      key_pass(state);
-    });
-    return;
-  }
-  key_pass(state);
-};
 
 
 
@@ -721,6 +703,12 @@ void h(qk_tap_dance_state_t *state, void *user_data) {
       return;
     }
   }
+  if(is_win() && has_mods(MOD_MASK_CTRL) && !has_mods(MOD_MASK_SAG)) { // ctrl + h keybinding
+    without_mods(MOD_MASK_CSAG, {
+      tap_code16(LGUI(KC_DOWN)); // send Win + Arrow Down to emulate Cmd + H on MacOS
+    });
+    return;
+  }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
@@ -759,7 +747,27 @@ void n(qk_tap_dance_state_t *state, void *user_data) {
 
 
 
-void k(qk_tap_dance_state_t *state, void *user_data) {
+void k(qk_tap_dance_state_t *state, void *user_data) { // also q key
+  if(key_down(state)) {
+    if(is_win() && has_mods(MOD_MASK_CTRL) && !has_mods(MOD_MASK_SAG)) { // ctrl + q keybinding
+      without_mods(MOD_MASK_CSAG, {
+        tap_code16(LALT(KC_F4)); // send Alt+F4 to emulate Cmd + Q on MacOS
+      });
+      return;
+    }
+    if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) { // alt pressed (additionally shift might be present)
+      without_mods(MOD_MASK_ALT, {
+        key_report(state->count, {
+          tap_code(KC_Q); // Q key
+        });
+      });
+      return;
+    }
+    key_report(state->count, {
+      tap_code(KC_Q);
+    });
+    return;
+  }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
@@ -980,7 +988,6 @@ void slash(qk_tap_dance_state_t *state, void *user_data) {
 
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [KC_Q] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, q, NULL, HOLD_TIMER),
   [KC_W] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, w, NULL, HOLD_TIMER),
   [KC_E] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, e, NULL, HOLD_TIMER),
   [KC_R] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, r, NULL, HOLD_TIMER),
