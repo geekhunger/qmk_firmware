@@ -45,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // right thumb
     XXXXXXX,            LALT_T(KC_BSPACE),
     XXXXXXX,
-    LGUI_T(KC_ESCAPE),  RSFT(KC_ENTER),   MO(NUMPAD)
+    LGUI_T(KC_ESCAPE),  RSFT_T(KC_ENTER),   MO(NUMPAD)
   ),
 
 
