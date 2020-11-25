@@ -3,6 +3,7 @@
 // please set system keyboard language to german!
 
 #include QMK_KEYBOARD_H
+#include "keymap_german.h"
 
 enum keyboard_layer {
   MACOS,
@@ -26,21 +27,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [MACOS] = LAYOUT(
     // left keywell
     XXXXXXX,      KC_F2,      KC_F1,      KC_F3,      KC_F5,           KC_F4,       KC_F6,  KC_F8,  KC_F7,
-    XXXXXXX,      KC_1,       KC_2,       KC_3,       KC_4,            KC_5,
-    XXXXXXX,      XXXXXXX,    TD(KC_W),   TD(KC_E),   TD(KC_R),        TD(KC_F),
-    XXXXXXX,      TD(KC_A),   TD(KC_S),   TD(KC_D),   TD(KC_T),        TD(KC_G),
-    XXXXXXX,      TD(KC_Z),   TD(KC_X),   TD(KC_C),   TD(KC_V),        TD(KC_B),
-                  XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,
+    DE_ACUT,      DE_1,       DE_2,       DE_3,       DE_4,            DE_5,
+    XXXXXXX,      XXXXXXX,    TD(DE_W),   TD(DE_E),   TD(DE_R),        TD(DE_F),
+    XXXXXXX,      TD(DE_A),   TD(DE_S),   TD(DE_D),   TD(DE_T),        TD(DE_G),
+    XXXXXXX,      TD(DE_Y),   TD(DE_X),   TD(DE_C),   TD(DE_V),        TD(DE_B),
+                  DE_CIRC,    DE_LABK,    XXXXXXX,    KC_LGUI,
     // left thumb
                   LALT_T(KC_DELETE),      XXXXXXX,
                                           KC_LCTRL,
     KC_SPACE,     LSFT_T(KC_TAB),         KC_LGUI,
     // right keywell
     KC_F9,      KC_F10,    KC_F11,        KC_F12,      KC_AUDIO_MUTE,  KC_AUDIO_VOL_DOWN,  KC_AUDIO_VOL_UP,  XXXXXXX,  RESET,
-    KC_6,       KC_7,      KC_8,          KC_9,        KC_0,           KC_MINUS,
-    TD(KC_Y),   TD(KC_U),  TD(KC_I),      TD(KC_O),    XXXXXXX,        XXXXXXX,
-    TD(KC_H),   TD(KC_N),  TD(KC_K),      TD(KC_L),    TD(KC_P),       XXXXXXX,
-    TD(KC_J),   TD(KC_M),  TD(KC_COMMA),  TD(KC_DOT),  TD(KC_SLASH),   XXXXXXX,
+    DE_6,       DE_7,      DE_8,          DE_9,        DE_0,           DE_SS,
+    TD(DE_Z),   TD(DE_U),  TD(DE_I),      TD(DE_O),    XXXXXXX,        XXXXXXX,
+    TD(DE_H),   TD(DE_N),  TD(DE_K),      TD(DE_L),    TD(DE_P),       XXXXXXX,
+    TD(DE_J),   TD(DE_M),  TD(DE_COMM),   TD(DE_DOT),  TD(DE_MINS),    XXXXXXX,
                 KC_LEFT,   KC_DOWN,       KC_UP,       KC_RIGHT,
     // right thumb
     XXXXXXX,            LALT_T(KC_BSPACE),
@@ -80,7 +81,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX,      KC_BRIGHTNESS_UP,   KC_BRIGHTNESS_DOWN,   XXXXXXX,    XXXXXXX,    MAC,      WIN,  XXXXXXX,  XXXXXXX,
     XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
     XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
-    XXXXXXX,      KC_1,               KC_2,                 KC_3,       KC_4,       KC_5,
+    XXXXXXX,      DE_1,               DE_2,                 DE_3,       DE_4,       DE_5,
     XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
                   XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,
     // left thumb
@@ -91,8 +92,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    KC_MEDIA_PLAY_PAUSE,  KC_MEDIA_PREV_TRACK,  KC_MEDIA_NEXT_TRACK,  XXXXXXX,  XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,     XXXXXXX,
     XXXXXXX,      XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,     XXXXXXX,
-    KC_6,         KC_7,      KC_8,      KC_9,       KC_0,        XXXXXXX,
-    XXXXXXX,      XXXXXXX,   KC_COMMA,  KC_DOT,     XXXXXXX,     XXXXXXX,
+    DE_6,         DE_7,      DE_8,      DE_9,       DE_0,        XXXXXXX,
+    XXXXXXX,      XXXXXXX,   DE_COMM,   DE_DOT,     XXXXXXX,     XXXXXXX,
                   XXXXXXX,   XXXXXXX,   XXXXXXX,    XXXXXXX,
     // right thumb
     XXXXXXX,  KC_BSPACE,
@@ -170,7 +171,7 @@ void e(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
         if(is_mac()) {
-          tap_code16(LSFT(LALT(KC_Q))); // »
+          tap_code16(LSFT(LALT(DE_Q))); // »
         } else if(is_win()) {
           // for available codes see https://wintipps.com/tastenkombination-sonderzeichen/
           register_code(KC_LALT);
@@ -190,7 +191,7 @@ void e(qk_tap_dance_state_t *state, void *user_data) {
       });
     } else { // alt is present
       without_mods(MOD_MASK_ALT, {
-        tap_code16(LCA(KC_E)); // €
+        tap_code(DE_EURO); // €
       });
     }
     return;
@@ -209,7 +210,7 @@ void r(qk_tap_dance_state_t *state, void *user_data) {
     } else { // alt is present
       without_mods(MOD_MASK_SA, {
         if(is_mac()) {
-          tap_code16(LALT(KC_R)); // ®
+          tap_code16(LALT(DE_R)); // ®
         } else if(is_win()) {
           register_code(KC_LALT);
           tap_code(KC_KP_1);
@@ -230,8 +231,8 @@ void f(qk_tap_dance_state_t *state, void *user_data) {
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
-        if(is_mac()) tap_code16(LALT(KC_8)); // {
-        else if(is_win()) tap_code16(ALGR(KC_7));
+        if(is_mac()) tap_code16(LALT(DE_8)); // {
+        else if(is_win()) tap_code(DE_LCBR);
       });
       return;
     }
@@ -251,7 +252,7 @@ void a(qk_tap_dance_state_t *state, void *user_data) {
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_ALT, {
-        tap_code(KC_QUOTE); // ä
+        tap_code(DE_ADIA); // ä
       });
       return;
     }
@@ -259,7 +260,7 @@ void a(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) { // alt but no shift pressed (ctrl or gui may be present)
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
-        tap_code(KC_KP_PLUS); // numpad plus (+)
+        tap_code(DE_PLUS); // +
       });
     });
     return;
@@ -280,14 +281,14 @@ void s(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LSFT(KC_4)); // $
+          tap_code(DE_DLR); // $
         });
       } else if(has_mods(MOD_MASK_ALT)) {
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LSFT(KC_3)); // §
+          tap_code(DE_SECT); // §
         });
       } else {
-        tap_code(KC_MINUS); // ß
+        tap_code(DE_SS); // ß
       }
       return;
     }
@@ -295,7 +296,7 @@ void s(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
-        tap_code(KC_KP_MINUS); // numpad minus (-)
+        tap_code(DE_MINS); // -
       });
     });
     return;
@@ -316,32 +317,19 @@ void d(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_ALT, {
-          if(is_mac()) {
-            tap_code16(LALT(KC_7)); // back slash
-          } else if(is_win()) {
-            register_code(KC_LALT);
-            tap_code(KC_KP_9);
-            tap_code(KC_KP_2);
-            unregister_code(KC_LALT);
-          }
+          if(is_mac()) tap_code16(LALT(DE_7)); // back slash
+          else if(is_win()) tap_code(DE_BSLS);
         });
       } else if(has_mods(MOD_MASK_ALT)) {
         without_mods(MOD_MASK_SA, {
           key_report(state->count, {
-            if(is_mac()) {
-              tap_code16(LALT(KC_7)); // pipe
-            } else if(is_win()) {
-              register_code(KC_LALT);
-              tap_code(KC_KP_1);
-              tap_code(KC_KP_2);
-              tap_code(KC_KP_4);
-              unregister_code(KC_LALT);
-            }
+            if(is_mac()) tap_code16(LALT(DE_7)); // pipe
+            else if(is_win()) tap_code(DE_PIPE);
           });
         });
       } else {
         key_report(state->count, {
-          tap_code16(LSFT(KC_7)); // forward slash
+          tap_code(DE_SLSH); // forward slash
         });
       }
       return;
@@ -350,7 +338,7 @@ void d(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
-        tap_code(KC_KP_SLASH); // numpad devide (/)
+        tap_code(DE_SLSH); // divide
       });
     });
     return;
@@ -371,11 +359,11 @@ void t(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
-          tap_code16(LSFT(KC_BSLASH)); // '
+          tap_code(DE_QUOT); // '
         });
       } else {
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LSFT(KC_2)); // "
+          tap_code(DE_DQUO); // "
         });
       }
       return;
@@ -384,7 +372,7 @@ void t(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       if(is_mac()) {
-        tap_code16(LSFT(LALT(KC_D))); // ™
+        tap_code16(LSFT(LALT(DE_D))); // ™
       } else if(is_win()) {
         register_code(KC_LALT);
         tap_code(KC_KP_0);
@@ -412,12 +400,12 @@ void g(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
-          if(is_mac()) tap_code16(LALT(KC_5)); // [
-          else if(is_win()) tap_code16(ALGR(KC_8));
+          if(is_mac()) tap_code16(LALT(DE_5)); // [
+          else if(is_win()) tap_code(DE_LBRC);
         });
       } else {
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LSFT(KC_8)); // (
+          tap_code(DE_LPRN); // (
         });
       }
       return;
@@ -425,15 +413,7 @@ void g(qk_tap_dance_state_t *state, void *user_data) {
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      if(is_mac()) {
-        tap_code16(LSFT(KC_NONUS_BSLASH)); // °
-      } else if(is_win()) {
-        register_code(KC_LALT);
-        tap_code(KC_KP_2);
-        tap_code(KC_KP_4);
-        tap_code(KC_KP_8);
-        unregister_code(KC_LALT);
-      }
+      tap_code(DE_DEG); // °
     });
     return;
   }
@@ -477,11 +457,11 @@ void c(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
-          tap_code(KC_EQUAL); // ´
+          tap_code(DE_ACUT); // ´
         });
       } else {
         without_mods(MOD_MASK_SA, {
-          tap_code16(LSFT(KC_EQUAL)); // `
+          tap_code(DE_GRV); // `
         });
       }
       return;
@@ -490,7 +470,7 @@ void c(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       if(is_mac()) {
-        tap_code16(LALT(KC_G)); // ©
+        tap_code16(LALT(DE_G)); // ©
       } else if(is_win()) {
         register_code(KC_LALT);
         tap_code(KC_KP_1);
@@ -516,7 +496,7 @@ void v(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_SA, {
       if(is_mac()) {
-        tap_code16(LSFT(LALT(KC_E))); // ‰
+        tap_code16(LSFT(LALT(DE_E))); // ‰
       } else if(is_win()) {
         register_code(KC_LALT);
         tap_code(KC_KP_0);
@@ -545,14 +525,12 @@ void b(qk_tap_dance_state_t *state, void *user_data) {
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
           key_report(min(2, state->count), {
-            if(is_mac()) tap_code(KC_NONUS_BSLASH); // ^
-            else if(is_win()) tap_code(KC_GRAVE);
+            tap_code(DE_CIRC); // ^
           });
         });
       } else {
         without_mods(MOD_MASK_ALT, {
-          if(is_mac()) tap_code(KC_GRAVE); // <
-          else if(is_win()) tap_code(KC_NONUS_BSLASH);
+          tap_code(DE_LABK); // <
         });
       }
       return;
@@ -573,8 +551,8 @@ void y(qk_tap_dance_state_t *state, void *user_data) { // geman z
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
-        if(is_mac()) tap_code16(LALT(KC_9)); // {
-        else if(is_win()) tap_code16(ALGR(KC_0));
+        if(is_mac()) tap_code16(LALT(DE_9)); // {
+        else if(is_win()) tap_code(DE_LCBR);
       });
       return;
     }
@@ -594,7 +572,7 @@ void u(qk_tap_dance_state_t *state, void *user_data) {
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_ALT, {
-        tap_code(KC_LBRACKET); // ü
+        tap_code(DE_UDIA); // ü
       });
       return;
     }
@@ -602,7 +580,7 @@ void u(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       if(is_mac()) {
-        tap_code16(LALT(KC_U)); // umlaut (¨)
+        tap_code16(LALT(DE_U)); // umlaut (¨)
       } else if(is_win()) {
         register_code(KC_LALT);
         tap_code(KC_KP_0);
@@ -630,7 +608,7 @@ void i(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
         if(is_mac()) {
-          tap_code16(LALT(KC_Q)); // «
+          tap_code16(LALT(DE_Q)); // «
         } else if(is_win()) {
           register_code(KC_LALT);
           tap_code(KC_KP_1);
@@ -657,7 +635,7 @@ void o(qk_tap_dance_state_t *state, void *user_data) {
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_ALT, {
-        tap_code(KC_SCOLON); // ö
+        tap_code(DE_ODIA); // ö
       });
       return;
     }
@@ -665,7 +643,7 @@ void o(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       if(is_mac()) {
-        tap_code16(LSFT(LALT(KC_O))); // Ø
+        tap_code16(LSFT(LALT(DE_O))); // Ø
       } else if(is_win()) {
         register_code(KC_LALT);
         tap_code(KC_KP_1);
@@ -692,12 +670,12 @@ void h(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || !has_mods(MOD_MASK_CG)) { // no mods or combination of alt and shift
       if(has_mods(MOD_MASK_SHIFT)) {
         without_mods(MOD_MASK_SA, {
-          if(is_mac()) tap_code16(LALT(KC_6)); // ]
-          else if(is_win()) tap_code16(ALGR(KC_9));
+          if(is_mac()) tap_code16(LALT(DE_6)); // ]
+          else if(is_win()) tap_code(DE_RBRC);
         });
       } else {
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LSFT(KC_9)); // )
+          tap_code(DE_RPRN); // )
         });
       }
       return;
@@ -712,7 +690,7 @@ void h(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
-        tap_code(KC_BSLASH); // #
+        tap_code(DE_HASH); // #
       });
     });
     return;
@@ -731,8 +709,8 @@ void h(qk_tap_dance_state_t *state, void *user_data) {
 void n(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      if(is_mac()) tap_code16(LALT(KC_N)); // ~
-      else if(is_win()) tap_code16(ALGR(KC_RBRACKET));
+      if(is_mac()) tap_code16(LALT(DE_N)); // ~
+      else if(is_win()) tap_code(DE_TILD);
     });
     return;
   }
@@ -758,20 +736,20 @@ void k(qk_tap_dance_state_t *state, void *user_data) { // also q key
     if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_CG)) { // alt pressed (additionally shift might be present)
       without_mods(MOD_MASK_ALT, {
         key_report(state->count, {
-          tap_code(KC_Q); // Q key
+          tap_code(DE_Q); // Q key
         });
       });
       return;
     }
     key_report(state->count, {
-      tap_code(KC_Q);
+      tap_code(DE_Q);
     });
     return;
   }
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       key_report(state->count, {
-        tap_code16(LSFT(KC_0)); // =
+        tap_code(DE_EQL); // =
       });
     });
     return;
@@ -790,8 +768,8 @@ void k(qk_tap_dance_state_t *state, void *user_data) { // also q key
 void l(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
-      if(is_mac()) tap_code16(LALT(KC_L)); // @
-      else if(is_win()) tap_code16(ALGR(KC_Q));
+      if(is_mac()) tap_code16(LALT(DE_L)); // @
+      else if(is_win()) tap_code(DE_AT);
     });
     return;
   }
@@ -811,7 +789,7 @@ void p(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
         if(is_mac()) {
-          tap_code16(LALT(KC_P)); // π
+          tap_code16(LALT(DE_P)); // π
         } else if(is_win()) {
           register_code(KC_LALT); // this unicode does not work on all windows apps (e.g. notepad cant, but word does well)
           tap_code(KC_KP_9);
@@ -830,7 +808,7 @@ void p(qk_tap_dance_state_t *state, void *user_data) {
       });
     } else {
       without_mods(MOD_MASK_ALT, {
-        tap_code16(LSFT(KC_5)); // %
+        tap_code(DE_PERC); // %
       });
     }
     return;
@@ -844,8 +822,7 @@ void j(qk_tap_dance_state_t *state, void *user_data) {
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
-        if(is_mac()) tap_code16(LSFT(KC_GRAVE)); // >
-        else if(is_win()) tap_code16(LSFT(KC_NONUS_BSLASH));
+        tap_code(DE_RABK); // >
       });
       return;
     }
@@ -858,7 +835,7 @@ void j(qk_tap_dance_state_t *state, void *user_data) {
     } else {
       without_mods(MOD_MASK_ALT, {
         key_report(state->count, {
-          tap_code16(LSFT(KC_6)); // &
+          tap_code(DE_AMPR); // &
         });
       });
     }
@@ -873,15 +850,8 @@ void m(qk_tap_dance_state_t *state, void *user_data) {
   if(key_down(state)) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
-        if(is_mac()) {
-          tap_code16(LALT(KC_M)); // µ
-        } else if(is_win()) {
-          register_code(KC_LALT);
-          tap_code(KC_KP_2);
-          tap_code(KC_KP_3);
-          tap_code(KC_KP_0);
-          unregister_code(KC_LALT);
-        }
+        if(is_mac()) tap_code16(LALT(DE_M)); // µ
+        else if(is_win()) tap_code(DE_MICR);
       });
       return;
     }
@@ -894,7 +864,7 @@ void m(qk_tap_dance_state_t *state, void *user_data) {
     } else {
       without_mods(MOD_MASK_ALT, {
         key_report(state->count, {
-          tap_code(KC_KP_ASTERISK); // numpad multiply (*)
+          tap_code(DE_ASTR); // *
         });
       });
     }
@@ -909,7 +879,7 @@ void comma(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_CSAG, {
       key_report(state->count, {
-        tap_code16(LSFT(KC_MINUS)); // ?
+        tap_code(DE_QUES); // ?
       });
     });
     return;
@@ -930,7 +900,7 @@ void dot(qk_tap_dance_state_t *state, void *user_data) {
     if(!has_mods(MOD_MASK_CSAG) || (has_mods(MOD_MASK_SA) && !has_mods(MOD_MASK_CG))) {
       without_mods(MOD_MASK_SA, {
         if(is_mac()) {
-          tap_code16(LALT(KC_DOT)); // …
+          tap_code16(LALT(DE_DOT)); // …
         } else if(is_win()) {
           register_code(KC_LALT);
           tap_code(KC_KP_0);
@@ -951,7 +921,7 @@ void dot(qk_tap_dance_state_t *state, void *user_data) {
     } else {
       without_mods(MOD_MASK_CSAG, {
         key_report(state->count, {
-          tap_code16(LSFT(KC_1)); // !
+          tap_code(DE_EXLM); // !
         });
       });
     }
@@ -962,11 +932,11 @@ void dot(qk_tap_dance_state_t *state, void *user_data) {
 
 
 
-void slash(qk_tap_dance_state_t *state, void *user_data) {
+void mins(qk_tap_dance_state_t *state, void *user_data) {
   if(has_mods(MOD_MASK_ALT) && !has_mods(MOD_MASK_SHIFT)) {
     without_mods(MOD_MASK_ALT, {
       if(is_mac()) {
-        tap_code16(LALT(KC_SLASH)); // hyphen (–)
+        tap_code16(LALT(DE_MINS)); // hyphen (–)
       } else if(is_win()) {
         register_code(KC_LALT);
         tap_code(KC_KP_4);
@@ -988,34 +958,34 @@ void slash(qk_tap_dance_state_t *state, void *user_data) {
 
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [KC_W] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, w, NULL, HOLD_TIMER),
-  [KC_E] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, e, NULL, HOLD_TIMER),
-  [KC_R] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, r, NULL, HOLD_TIMER),
-  [KC_F] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, f, NULL, HOLD_TIMER),
-  [KC_A] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, a, NULL, HOLD_TIMER),
-  [KC_S] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, s, NULL, HOLD_TIMER),
-  [KC_D] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, d, NULL, HOLD_TIMER),
-  [KC_T] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, t, NULL, HOLD_TIMER),
-  [KC_G] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, g, NULL, HOLD_TIMER),
-  [KC_Z] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, z, NULL, HOLD_TIMER), // german y
-  [KC_X] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, x, NULL, HOLD_TIMER),
-  [KC_C] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, c, NULL, HOLD_TIMER),
-  [KC_V] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, v, NULL, HOLD_TIMER),
-  [KC_B] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, b, NULL, HOLD_TIMER),
-  [KC_Y] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, y, NULL, HOLD_TIMER), // german z
-  [KC_U] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, u, NULL, HOLD_TIMER),
-  [KC_I] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, i, NULL, HOLD_TIMER),
-  [KC_O] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, o, NULL, HOLD_TIMER),
-  [KC_H] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, h, NULL, HOLD_TIMER),
-  [KC_N] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, n, NULL, HOLD_TIMER),
-  [KC_K] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, k, NULL, HOLD_TIMER),
-  [KC_L] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, l, NULL, HOLD_TIMER),
-  [KC_P] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, p, NULL, HOLD_TIMER),
-  [KC_J] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, j, NULL, HOLD_TIMER),
-  [KC_M] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, m, NULL, HOLD_TIMER),
-  [KC_COMMA] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, comma, NULL, HOLD_TIMER),
-  [KC_DOT] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, dot, NULL, HOLD_TIMER),
-  [KC_SLASH] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, slash, NULL, HOLD_TIMER),
+  [DE_W] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, w, NULL, HOLD_TIMER),
+  [DE_E] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, e, NULL, HOLD_TIMER),
+  [DE_R] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, r, NULL, HOLD_TIMER),
+  [DE_F] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, f, NULL, HOLD_TIMER),
+  [DE_A] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, a, NULL, HOLD_TIMER),
+  [DE_S] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, s, NULL, HOLD_TIMER),
+  [DE_D] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, d, NULL, HOLD_TIMER),
+  [DE_T] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, t, NULL, HOLD_TIMER),
+  [DE_G] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, g, NULL, HOLD_TIMER),
+  [DE_Z] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, z, NULL, HOLD_TIMER), // german y
+  [DE_X] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, x, NULL, HOLD_TIMER),
+  [DE_C] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, c, NULL, HOLD_TIMER),
+  [DE_V] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, v, NULL, HOLD_TIMER),
+  [DE_B] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, b, NULL, HOLD_TIMER),
+  [DE_Y] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, y, NULL, HOLD_TIMER), // german z
+  [DE_U] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, u, NULL, HOLD_TIMER),
+  [DE_I] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, i, NULL, HOLD_TIMER),
+  [DE_O] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, o, NULL, HOLD_TIMER),
+  [DE_H] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, h, NULL, HOLD_TIMER),
+  [DE_N] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, n, NULL, HOLD_TIMER),
+  [DE_K] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, k, NULL, HOLD_TIMER),
+  [DE_L] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, l, NULL, HOLD_TIMER),
+  [DE_P] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, p, NULL, HOLD_TIMER),
+  [DE_J] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, j, NULL, HOLD_TIMER),
+  [DE_M] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, m, NULL, HOLD_TIMER),
+  [DE_COMM] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, comma, NULL, HOLD_TIMER),
+  [DE_DOT] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, dot, NULL, HOLD_TIMER),
+  [DE_MINS] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, mins, NULL, HOLD_TIMER),
 };
 
 
