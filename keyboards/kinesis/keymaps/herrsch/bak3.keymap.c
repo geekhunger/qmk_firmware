@@ -4,9 +4,6 @@
 
 #include QMK_KEYBOARD_H
 
-// TODO use "keymap_german.h" to avoid manual key swapping from english to german layout
-// but this header is made to work on windows, so it needs to be extended to work on mac
-
 enum keyboard_layer {
   MACOS,
   WINDOWS,
@@ -29,11 +26,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [MACOS] = LAYOUT(
     // left keywell
     XXXXXXX,      KC_F2,      KC_F1,      KC_F3,      KC_F5,           KC_F4,       KC_F6,  KC_F8,  KC_F7,
-    XXXXXXX,      KC_1,       KC_2,       KC_3,       KC_4,            KC_5,
+    KC_EQL,       KC_1,       KC_2,       KC_3,       KC_4,            KC_5,
     XXXXXXX,      XXXXXXX,    TD(KC_W),   TD(KC_E),   TD(KC_R),        TD(KC_F),
     XXXXXXX,      TD(KC_A),   TD(KC_S),   TD(KC_D),   TD(KC_T),        TD(KC_G),
     XXXXXXX,      TD(KC_Z),   TD(KC_X),   TD(KC_C),   TD(KC_V),        TD(KC_B),
-                  XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,
+                  KC_NUBS,    KC_GRV,     XXXXXXX,    KC_LGUI,
     // left thumb
                   LALT_T(KC_DELETE),      XXXXXXX,
                                           KC_LCTRL,
