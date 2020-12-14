@@ -143,11 +143,11 @@ bool has_mods(uint8_t mask) {return (weak_mods_have(mask) || real_mods_have(mask
 void key_pass(qk_tap_dance_state_t *state) {
   if((is_mac() && has_mods(MOD_MASK_GUI)) || (is_win() && has_mods(MOD_MASK_CTRL))) {
     tap_code(state->keycode); // tap key only once for OS commands
-    return;
+  } else {
+    key_report(state->count, {
+      tap_code(state->keycode);
+    });
   }
-  key_report(state->count, {
-    tap_code(state->keycode);
-  });
 };
 
 bool key_up(qk_tap_dance_state_t *state) {return state->interrupted || !state->pressed;};
@@ -1084,13 +1084,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
       case KC_LEFT:
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LCTL(keycode)); // jump over word to the left
+          tap_code16(LCTL(KC_LEFT)); // jump over word to the left
         });
         return false;
       
       case KC_RIGHT:
         without_mods(MOD_MASK_ALT, {
-          tap_code16(LCTL(keycode)); // jump over word to the right
+          tap_code16(LCTL(KC_RIGHT)); // jump over word to the right
         });
         return false;
       
