@@ -80,7 +80,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [NUMPAD] = LAYOUT(
     // left keywell
-    XXXXXXX,      KC_BRIGHTNESS_UP,   KC_BRIGHTNESS_DOWN,   XXXXXXX,    XXXXXXX,    MAC,      WIN,  XXXXXXX,  XXXXXXX,
+    TG(WINDOWS),  KC_BRIGHTNESS_UP,   KC_BRIGHTNESS_DOWN,   XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,  XXXXXXX,  XXXXXXX,
     XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
     XXXXXXX,      XXXXXXX,            XXXXXXX,              XXXXXXX,    XXXXXXX,    XXXXXXX,
     XXXXXXX,      KC_1,               KC_2,                 KC_3,       KC_4,       KC_5,
@@ -109,9 +109,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define min(a, b) ((a < b) ? a : b)
 #define max(a, b) ((a > b) ? a : b)
 
-// https://github.com/qmk/qmk_firmware/issues/2862#issuecomment-394535954
-bool is_mac(void) {return biton32(default_layer_state) == MACOS;};
-bool is_win(void) {return biton32(default_layer_state) == WINDOWS;};
+#define is_win(void) layer_state_is(WINDOWS)
+#define is_mac(void) !is_win()
 
 bool real_mods_have(uint8_t mask) {return (get_mods() & mask) != 0;};
 bool weak_mods_have(uint8_t mask) {return (get_weak_mods() & mask) != 0;};
@@ -1023,19 +1022,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case MAC:
-      if(!is_mac()) {
-        set_single_persistent_default_layer(MACOS);
-        return false;
-      }
-    case WIN:
-      if(!is_win()) {
-        set_single_persistent_default_layer(WINDOWS);
-        return false;
-      }
-  }
-
   if(is_win() && record->event.pressed && !has_mods(MOD_MASK_AG) && has_mods(MOD_MASK_CTRL)) {
     switch(keycode) {
       case KC_LEFT:
