@@ -1,3 +1,11 @@
+/*
+  HOWTO:
+  1) compile firmware with `./bin/qmk compile` or `bin/qmk compile -kb kinesis/kint36 -km herrsch`
+  A .bin and .hex files will be generated and saved (we only need the HEX).
+  2) Flash the generated file at '.build/kinesis_kint36_herrsch.hex` to the Teensy 3.6 board with `bin/qmk flash`
+  A prompt will ask to press the reset button on the Teensy Board and then automatically update the keyboard firmware and reboot the keyboard. Done.
+*/
+
 // Keymap for Kinesis Advantage2 (KB600) QWERTZ layout DE german
 // Designed to run on MacOS/iPadOS/iOS and Windows
 // Please, set system keyboard language to German!
