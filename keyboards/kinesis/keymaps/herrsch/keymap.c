@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // left thumb
                   LALT_T(KC_DELETE),      XXXXXXX,
                                           KC_LCTRL,
-    KC_SPACE,     LSFT_T(KC_TAB),         KC_LGUI,
+    KC_SPACE,     LSFT_T(KC_TAB),         LGUI_T(KC_ESCAPE),
     // right keywell
     KC_F9,      KC_F10,    KC_F11,        KC_F12,      KC_AUDIO_MUTE,  KC_AUDIO_VOL_DOWN,  KC_AUDIO_VOL_UP,  XXXXXXX,  RESET,
     KC_6,       KC_7,      KC_8,          KC_9,        KC_0,           KC_MINUS,
@@ -63,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // left thumb
                   RALT_T(KC_DELETE),  KC_LALT,
                                       KC_LGUI,
-    _______,      _______,            KC_LCTRL,
+    _______,      _______,            LCTL_T(KC_ESCAPE),
     // right keywell
     _______,      _______,      _______,    _______,    _______,  _______,  _______,  _______,  _______,
     _______,      _______,      _______,    _______,    _______,  _______,
