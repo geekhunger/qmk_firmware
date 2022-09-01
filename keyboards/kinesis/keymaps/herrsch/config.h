@@ -1,7 +1,7 @@
 #pragma once
 
 #define TAPPING_TERM 90 // I'm mainly using this for modifiers, etc
-#define KEY_TAP_TIMEOUT 160 // same meaning as TAPPING_TERM but for the rest of the regular keys (KC_A ... KC_Z)
+#define KEY_TAP_TIMEOUT 170 // same meaning as TAPPING_TERM but for the rest of the regular keys (KC_A ... KC_Z)
 #define PREVENT_STUCK_MODIFIERS
 
 //#define STM32_SYSCLK KINETIS_SYSCLK_FREQUENCY
