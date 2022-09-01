@@ -67,6 +67,7 @@ doxygen/
 secrets.tar
 id_rsa_*
 /.vs
+.DS_Store
 
 # python things
 __pycache__
